@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
 
   zookeeper:
@@ -20,6 +20,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://${HOST_IP}:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   kafka-ui:
     restart: unless-stopped
@@ -40,7 +41,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: scanner
+      POSTGRES_DB: producer
 
   adminer:
     restart: unless-stopped
@@ -54,15 +55,21 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: consumer
+    volumes:
+      -  ./mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
 
   mongo-express:
     restart: unless-stopped
     image: mongo-express:latest
+    depends_on:
+      - mongo
     ports:
       - "8092:8081"
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
-      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017

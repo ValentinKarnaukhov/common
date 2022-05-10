@@ -18,10 +18,11 @@ import java.util.UUID;
 
 @Configuration
 @RequiredArgsConstructor
-public class KafkaConfig {
+public class KafkaProducerConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String kafkaBootstrapServer;
+
     private final ObjectMapper objectMapper;
 
     @Bean

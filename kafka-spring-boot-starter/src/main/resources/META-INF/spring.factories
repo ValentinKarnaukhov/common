@@ -1,5 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.github.valentinkarnaukhov.education.kafkastarter.config.KafkaConfig,\
+  com.github.valentinkarnaukhov.education.kafkastarter.config.KafkaProducerConfig,\
+  com.github.valentinkarnaukhov.education.kafkastarter.config.KafkaConsumerConfig,\
   com.github.valentinkarnaukhov.education.kafkastarter.service.KafkaEventPublisher
 
 org.springframework.boot.env.EnvironmentPostProcessor=\
