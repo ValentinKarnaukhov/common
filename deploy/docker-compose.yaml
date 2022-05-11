@@ -3,13 +3,13 @@ services:
 
   zookeeper:
     restart: unless-stopped
-    image: confluentinc/cp-zookeeper:latest
+    image: confluentinc/cp-zookeeper:6.2.4
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
 
   kafka:
     restart: unless-stopped
-    image: confluentinc/cp-kafka:latest
+    image: confluentinc/cp-kafka:6.2.4
     depends_on:
       - zookeeper
     ports:
@@ -24,7 +24,7 @@ services:
 
   kafka-ui:
     restart: unless-stopped
-    image: provectuslabs/kafka-ui
+    image: provectuslabs/kafka-ui:v0.4.0
     container_name: kafka-ui
     ports:
       - "8090:8080"
@@ -41,17 +41,18 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: producer
+    volumes:
+      - ./postgres/init-postgres.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
 
   adminer:
     restart: unless-stopped
-    image: adminer
+    image: adminer:4.8.1-standalone
     ports:
       - "8091:8080"
 
   mongo:
     restart: unless-stopped
-    image: mongo:latest
+    image: mongo:5.0.8
     ports:
       - "27017:27017"
     environment:
@@ -59,11 +60,11 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
       MONGO_INITDB_DATABASE: consumer
     volumes:
-      -  ./mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
 
   mongo-express:
     restart: unless-stopped
-    image: mongo-express:latest
+    image: mongo-express:0.54.0
     depends_on:
       - mongo
     ports:
@@ -73,3 +74,21 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_PORT: 27017
+
+  keycloak:
+    restart: unless-stopped
+    image: jboss/keycloak:16.1.1
+    depends_on:
+      - postgres
+    ports:
+      - "8093:8443"
+    environment:
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: postgres
+      DB_PASSWORD: password
+      KEYCLOAK_USER: keycloak
+      KEYCLOAK_PASSWORD: password
+    volumes:
+      - ./keycloak/:/etc/x509/https

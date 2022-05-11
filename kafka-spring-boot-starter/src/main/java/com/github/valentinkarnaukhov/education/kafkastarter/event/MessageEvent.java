@@ -11,6 +11,7 @@ import java.util.UUID;
 public class MessageEvent {
 
     private UUID companyUuid;
+    private UUID userUuid;
     private String text;
     private Instant timestamp;
 
