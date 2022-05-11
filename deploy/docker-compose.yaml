@@ -90,5 +90,7 @@ services:
       DB_PASSWORD: password
       KEYCLOAK_USER: keycloak
       KEYCLOAK_PASSWORD: password
+      KEYCLOAK_IMPORT: /realms/education-realm.json
     volumes:
-      - ./keycloak/:/etc/x509/https
+      - ./keycloak/cert/:/etc/x509/https
+      - ./keycloak/realms/:/realms
