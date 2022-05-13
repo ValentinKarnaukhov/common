@@ -75,6 +75,23 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_PORT: 27017
 
+  producer:
+    restart: unless-stopped
+    image: vkarnaukh/education-producer:0.0.1-SNAPSHOT
+    depends_on:
+      - postgres
+    ports:
+      - "8081:8081"
+      - "5005:5005"
+    environment:
+      REMOTE_HOST: localhost
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/producer
+      KEYCLOAK_AUTH-SERVER-URL: https://keycloak:8443/auth
+      TOKEN_URL: https://${HOST_IP}:8093/auth/realms/education/protocol/openid-connect/token
+      KEYCLOAK_SSL-REQUIRED: none
+      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:29092
+      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+
   keycloak:
     restart: unless-stopped
     image: jboss/keycloak:16.1.1
@@ -82,6 +99,7 @@ services:
       - postgres
     ports:
       - "8093:8443"
+      - "8094:8080"
     environment:
       DB_VENDOR: postgres
       DB_ADDR: postgres
@@ -91,6 +109,19 @@ services:
       KEYCLOAK_USER: keycloak
       KEYCLOAK_PASSWORD: password
       KEYCLOAK_IMPORT: /realms/education-realm.json
+      KEYCLOAK_FRONTEND_URL: https://${HOST_IP}:8093/auth
     volumes:
       - ./keycloak/cert/:/etc/x509/https
       - ./keycloak/realms/:/realms
+
+  consumer:
+    restart: unless-stopped
+    image: vkarnaukh/education-consumer:0.0.1-SNAPSHOT
+    depends_on:
+      - mongo
+    ports:
+      - "8082:8082"
+    environment:
+      REMOTE_HOST: localhost
+      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:29092
+      SPRING_DATA_MONGODB_HOST: mongo
