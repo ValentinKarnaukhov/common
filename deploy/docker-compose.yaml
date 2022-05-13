@@ -82,7 +82,6 @@ services:
       - postgres
     ports:
       - "8081:8081"
-      - "5005:5005"
     environment:
       REMOTE_HOST: localhost
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/producer
@@ -90,7 +89,6 @@ services:
       TOKEN_URL: https://${HOST_IP}:8093/auth/realms/education/protocol/openid-connect/token
       KEYCLOAK_SSL-REQUIRED: none
       SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:29092
-      JAVA_TOOL_OPTIONS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
 
   keycloak:
     restart: unless-stopped
@@ -99,7 +97,6 @@ services:
       - postgres
     ports:
       - "8093:8443"
-      - "8094:8080"
     environment:
       DB_VENDOR: postgres
       DB_ADDR: postgres
