@@ -29,10 +29,11 @@ public class KafkaProducerConfig {
     public ProducerFactory<UUID, Object> producerFactory() {
         Map<String, Object> configs = new HashMap<>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaBootstrapServer);
+
         return new DefaultKafkaProducerFactory<>(
                 configs,
                 new UUIDSerializer(),
-                new JsonSerializer<>(objectMapper)
+                new JsonSerializer<>(objectMapper).noTypeInfo()
         );
     }
 

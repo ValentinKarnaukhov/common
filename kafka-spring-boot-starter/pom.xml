@@ -13,6 +13,7 @@
     <packaging>jar</packaging>
 
     <name>kafka-spring-boot-starter</name>
+    <description>Common package to produce and consume messages via Apache Kafka.</description>
 
     <properties>
         <java.version>11</java.version>
@@ -26,11 +27,6 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>

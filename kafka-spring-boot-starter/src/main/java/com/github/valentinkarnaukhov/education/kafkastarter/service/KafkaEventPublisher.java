@@ -12,8 +12,8 @@ import java.util.UUID;
 public class KafkaEventPublisher<EventType> {
 
     public ListenableFuture<SendResult<UUID, EventType>> send(UUID key, Collection<Header> headers, EventType value) {
-        ProducerRecord<UUID, EventType> producerRecord = new ProducerRecord<>(getTopicName(), null, key, value, headers);
-        return getKafkaTemplate().send(producerRecord);
+        ProducerRecord<UUID, EventType> producerRecord = new ProducerRecord<>(this.getTopicName(), null, key, value, headers);
+        return this.getKafkaTemplate().send(producerRecord);
     }
 
     public ListenableFuture<SendResult<UUID, EventType>> send(EventType value) {
