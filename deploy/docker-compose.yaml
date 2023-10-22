@@ -17,7 +17,7 @@ services:
     environment:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: INTERNAL://:29092,EXTERNAL://:9092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://${HOST_IP}:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:29092,EXTERNAL://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
@@ -75,21 +75,6 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_PORT: 27017
 
-  producer:
-    restart: unless-stopped
-    image: vkarnaukh/education-producer:0.0.1-SNAPSHOT
-    depends_on:
-      - postgres
-    ports:
-      - "8081:8081"
-    environment:
-      REMOTE_HOST: localhost
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/producer
-      KEYCLOAK_AUTH-SERVER-URL: https://keycloak:8443/auth
-      TOKEN_URL: https://${HOST_IP}:8093/auth/realms/education/protocol/openid-connect/token
-      KEYCLOAK_SSL-REQUIRED: none
-      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:29092
-
   keycloak:
     restart: unless-stopped
     image: jboss/keycloak:16.1.1
@@ -106,19 +91,6 @@ services:
       KEYCLOAK_USER: keycloak
       KEYCLOAK_PASSWORD: password
       KEYCLOAK_IMPORT: /realms/education-realm.json
-      KEYCLOAK_FRONTEND_URL: https://${HOST_IP}:8093/auth
     volumes:
       - ./keycloak/cert/:/etc/x509/https
       - ./keycloak/realms/:/realms
-
-  consumer:
-    restart: unless-stopped
-    image: vkarnaukh/education-consumer:0.0.1-SNAPSHOT
-    depends_on:
-      - mongo
-    ports:
-      - "8082:8082"
-    environment:
-      REMOTE_HOST: localhost
-      SPRING_KAFKA_BOOTSTRAP-SERVERS: kafka:29092
-      SPRING_DATA_MONGODB_HOST: mongo
